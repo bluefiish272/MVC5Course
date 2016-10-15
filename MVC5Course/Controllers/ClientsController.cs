@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MVC5Course.Models;
+using MVC5Course.Models.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
@@ -6,7 +8,6 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using MVC5Course.Models;
 
 namespace MVC5Course.Controllers
 {
@@ -15,14 +16,32 @@ namespace MVC5Course.Controllers
         private FabricsEntities db = new FabricsEntities();
 
         // GET: Clients
-        public ActionResult Index()
+        public ActionResult Index(string search)
         {
             var client = db.Client.Include(c => c.Occupation);
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                //client = client.Where(p => p.FirstName.Contains(search));
+                client = client.Where(p => p.FirstName == search);
+
+            }
             client = client.OrderByDescending(p => p.ClientId).Take(10);
             return View(client);
             //return View(db.Client.ToList());
         }
 
+        public ActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Login(ClientLoginViewModel client)
+        {
+            ViewBag.Message = client.FirstName;
+            return View("LoginResult", client);
+        }
         // GET: Clients/Details/5
         public ActionResult Details(int? id)
         {
@@ -41,7 +60,14 @@ namespace MVC5Course.Controllers
         // GET: Clients/Create
         public ActionResult Create()
         {
-            return View();
+            ViewBag.OccupationId = new SelectList(db.Occupation, "OccupationId", "OccupationName");
+
+            var client = new Client()
+            {
+                Gender = "M"
+            };
+
+            return View(client);
         }
 
         // POST: Clients/Create
