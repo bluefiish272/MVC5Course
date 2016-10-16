@@ -29,7 +29,24 @@ namespace MVC5Course.Controllers
                 Stock = 1                
             };
             db.Product.Add(product);
-            db.SaveChanges();
+           // db.SaveChanges();
+
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbEntityValidationException ex)
+            {
+                foreach (var entityError in ex.EntityValidationErrors)
+                {
+                    foreach (var vErrors in entityError.ValidationErrors)
+                    {
+                        throw new DbEntityValidationException(vErrors.PropertyName + "發生錯誤：" + vErrors.ErrorMessage);
+
+                    }
+                }
+
+            }
             return RedirectToAction("Index");
         }
 
