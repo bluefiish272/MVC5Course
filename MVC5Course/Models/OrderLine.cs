@@ -16,6 +16,7 @@ namespace MVC5Course.Models
     {
         public int OrderId { get; set; }
         public int LineNumber { get; set; }
+        public int ProductId { get; set; }
         public decimal Qty { get; set; }
         public decimal LineTotal { get; set; }
     
