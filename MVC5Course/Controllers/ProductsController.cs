@@ -10,14 +10,18 @@ using MVC5Course.Models;
 
 namespace MVC5Course.Controllers
 {
-    public class ProductsController : Controller
+    public class ProductsController : BaseController
     {
-        private FabricsEntities db = new FabricsEntities();
+        ProductRepository repo = RepositoryHelper.GetProductRepository();
+
+        //private FabricsEntities db = new FabricsEntities();
 
         // GET: Products
         public ActionResult Index()
         {
-            return View(db.Product.ToList());
+            var data = repo.All();
+            //db.Product.ToList()
+            return View(data);
         }
 
         // GET: Products/Details/5
@@ -27,7 +31,9 @@ namespace MVC5Course.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Product product = db.Product.Find(id);
+            //Product product = db.Product.Find(id);
+            Product product = repo.Find(id.Value);
+
             if (product == null)
             {
                 return HttpNotFound();
@@ -50,8 +56,10 @@ namespace MVC5Course.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Product.Add(product);
-                db.SaveChanges();
+                repo.Add(product);
+                //db.Product.Add(product);
+                repo.UnitOfWork.Commit();
+                //db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
@@ -65,7 +73,7 @@ namespace MVC5Course.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Product product = db.Product.Find(id);
+            Product product = repo.Find(id.Value);
             if (product == null)
             {
                 return HttpNotFound();
@@ -82,6 +90,8 @@ namespace MVC5Course.Controllers
         {
             if (ModelState.IsValid)
             {
+                var db = repo.UnitOfWork.Context;
+                //宣告db,將其指向repository的context
                 db.Entry(product).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -90,13 +100,14 @@ namespace MVC5Course.Controllers
         }
 
         // GET: Products/Delete/5
+
         public ActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Product product = db.Product.Find(id);
+            Product product = repo.Find(id.Value);
             if (product == null)
             {
                 return HttpNotFound();
@@ -109,10 +120,12 @@ namespace MVC5Course.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Product product = db.Product.Find(id);
+            Product product = repo.Find(id);
             //db.Product.Remove(product);
-            product.IsDeleted = true;
-            db.SaveChanges();
+            //product.Is刪除 = true;
+            repo.Delete(product);
+            repo.UnitOfWork.Commit();
+            //db.SaveChanges();
             return RedirectToAction("Index");
         }
 
@@ -120,7 +133,9 @@ namespace MVC5Course.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                //db.Dispose();
+                repo.UnitOfWork.Context.Dispose();
+
             }
             base.Dispose(disposing);
         }
