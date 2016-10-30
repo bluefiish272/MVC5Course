@@ -1,18 +1,21 @@
 ﻿using MVC5Course.Models.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
 namespace MVC5Course.Controllers
 {
+    [HandleError(ExceptionType = typeof(DbEntityValidationException),View = "ex_DbEntityValidationException")]
     public class MBController : BaseController
     {
         // GET: MB
+        [ShareViewData]
         public ActionResult Index()
         {
-            ViewData["Temp1"] = "暫存資料1";
+            //ViewData["Temp1"] = "暫存資料1";
 
             var o = new ClientLoginViewModel()
             {
@@ -47,7 +50,7 @@ namespace MVC5Course.Controllers
         {
             return View();
         }
-
+        [LocalDebugOnly]
         public ActionResult ProductList()
         {
             var data = db.Product.OrderBy(p => p.ProductId).Take(10);
@@ -69,6 +72,12 @@ namespace MVC5Course.Controllers
                 db.SaveChanges();
             }
             return RedirectToAction("ProductList");
+        }
+
+        public ActionResult MyError()
+        {
+            throw new InvalidOperationException("Error");
+            return View();
         }
     }
 }
