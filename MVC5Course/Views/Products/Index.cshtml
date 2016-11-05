@@ -2,6 +2,10 @@
 
 @{
     ViewBag.Title = "Index";
+    if (IsAjax)
+    {
+        Layout = "";
+    }
 }
 
 <h2>Index</h2>
@@ -56,7 +60,30 @@
 
 </table>
 
+@using PagedList
+@using PagedList.Mvc
+
+@*@Html.PagedListPager(
+    list: Model as IPagedList, 
+    generatePageUrl: pageNo => Url.RouteUrl(new { page = pageNo}),
+    options: PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing("Main"))*@
+
+@*Ajax的分頁*@
+@Html.PagedListPager(Model as IPagedList, (p) => Url.Action("Index", new { pageNo = p }), PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing("Main"))
+
+@*會跳URL的分頁(非Ajax)*@
+@*@Html.PagedListPager(Model as IPagedList,(p) => Url.Action("Index",new { pageNo = p}))*@
+
+
 <div id="getDetails"></div>
+
+@{ 
+    ViewBag.Msg = "123";
+}
 @section Scripts {
+    <script>
+        var str = '@Ajax.JavaScriptStringEncode(ViewBag.Msg)';
+        console.log(str);
+    </script>
     <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
 }
