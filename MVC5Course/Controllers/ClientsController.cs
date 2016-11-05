@@ -11,12 +11,13 @@ using System.Web.Mvc;
 
 namespace MVC5Course.Controllers
 {
+    [Authorize]
     public class ClientsController : BaseController
     {
         //private FabricsEntities db = new FabricsEntities();
 
         // GET: Clients
-        public ActionResult Index(string search)
+        public ActionResult Index(string search, int? CreditRating, string Gender)
         {
             var client = db.Client.Include(c => c.Occupation);
 
@@ -24,9 +25,16 @@ namespace MVC5Course.Controllers
             {
                 //client = client.Where(p => p.FirstName.Contains(search));
                 client = client.Where(p => p.FirstName == search);
+           }
 
-            }
             client = client.OrderByDescending(p => p.ClientId).Take(10);
+
+            var options = (from c in db.Client select c.CreditRating).Distinct().OrderBy(p => p).ToList();
+            ViewBag.CreditRating = new SelectList(options);
+
+            ViewBag.Gender = new SelectList(new string[] { "M", "F" });
+
+
             return View(client);
             //return View(db.Client.ToList());
         }

@@ -1,6 +1,7 @@
 ﻿@model IEnumerable<MVC5Course.Models.Order>
 
 @{
+    Layout = null;
     ViewBag.Title = "Index";
 }
 
@@ -40,12 +41,10 @@
         <td>
             @Html.DisplayFor(modelItem => item.Client.FirstName)
         </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.OrderId }) |
-            @Html.ActionLink("Details", "Details", new { id=item.OrderId }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.OrderId })
-        </td>
+
     </tr>
 }
+
+
 
 </table>
