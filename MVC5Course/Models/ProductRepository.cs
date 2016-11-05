@@ -9,7 +9,7 @@ namespace MVC5Course.Models
         //透過override改寫All API的邏輯。base.All是EFRepository<Product>預設的。this.All則是取OVERRIDE後的All的方法。
         public override IQueryable<Product> All()
         {
-            return base.All().Where(p => p.Is刪除 == false);
+            return base.All().Where(p => p.Is刪除 == false).Take(15);
         }
         public Product Find(int id)
         {
